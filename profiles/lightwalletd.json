@@ -1,0 +1,5 @@
+{
+  "profile": "lightwalletd",
+  "backend": "lightwalletd",
+  "endpoint": "https://lightwalletd.testnet.cipherscan.app"
+}

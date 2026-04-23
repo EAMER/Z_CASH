@@ -1,0 +1,16 @@
+{
+  "name": "GetLatestBlock - Intentional Fail Demo",
+  "method": "GetLatestBlock",
+  "request": {},
+  "expected": {
+    "height": "<10"
+  },
+  "validation": {
+    "required_fields": ["height"],
+    "field_types": {
+      "height": "number"
+    },
+    "exact_match": false,
+    "allow_error": false
+  }
+}

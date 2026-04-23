@@ -1,0 +1,15 @@
+{
+  "name": "GetBlockRange - Valid Range",
+  "method": "GetBlockRange",
+  "request": {
+    "mode": "recent",
+    "depth": 2
+  },
+  "expected": [],
+  "validation": {
+    "required_fields": [],
+    "field_types": {},
+    "exact_match": false,
+    "allow_error": false
+  }
+}

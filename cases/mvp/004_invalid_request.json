@@ -1,0 +1,15 @@
+{
+  "name": "GetBlockRange - Invalid Range",
+  "method": "GetBlockRange",
+  "request": {
+    "start": 9999999,
+    "end": 9999998
+  },
+  "expected": {},
+  "validation": {
+    "required_fields": [],
+    "field_types": {},
+    "exact_match": false,
+    "allow_error": true
+  }
+}
