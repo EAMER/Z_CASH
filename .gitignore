@@ -1,0 +1,33 @@
+# Rust build artifacts
+/target/
+
+# Generated reports
+/reports/
+
+# Backup files
+**/*.rs.bk
+
+# Windows debug symbols
+*.pdb
+
+# Executables
+*.exe
+*.dll
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Keep Cargo.lock for application projects
+# Cargo.lock
