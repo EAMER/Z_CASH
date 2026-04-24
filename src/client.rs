@@ -74,13 +74,38 @@ impl GrpcClient {
         match test_case.method.as_str() {
             "GetLatestBlock" => self.get_latest_block().await,
             "GetBlockRange" => {
-                let start = test_case.request["start"].as_u64().unwrap_or(0);
-                let end = test_case.request["end"].as_u64().unwrap_or(100);
+                let req = &test_case.request;
+                let mode = req["mode"].as_str().unwrap_or("explicit");
+
+                let (start, end) = if mode == "recent" {
+                    // Fetch the current tip, then walk back `depth` blocks.
+                    let depth = req["depth"].as_u64().unwrap_or(1).max(1);
+                    let tip = self.get_tip_height().await?;
+                    let start = tip.saturating_sub(depth - 1);
+                    (start, tip)
+                } else {
+                    // Explicit start/end supplied directly in the test config.
+                    let start = req["start"].as_u64().ok_or_else(|| {
+                        anyhow!("GetBlockRange: missing 'start' in request (or set mode:recent)")
+                    })?;
+                    let end = req["end"].as_u64().ok_or_else(|| {
+                        anyhow!("GetBlockRange: missing 'end' in request (or set mode:recent)")
+                    })?;
+                    (start, end)
+                };
+
                 self.get_block_range(start, end).await
             }
             "GetLatestTreeState" => self.get_latest_tree_state().await,
             _ => Err(anyhow!("Unknown method: {}", test_case.method)),
         }
+    }
+
+    /// Returns the current chain tip height without exposing the full BlockId JSON.
+    async fn get_tip_height(&mut self) -> Result<u64> {
+        let request = tonic::Request::new(ChainSpec {});
+        let response = self.client.get_latest_block(request).await?;
+        Ok(response.into_inner().height)
     }
 
     async fn get_latest_block(&mut self) -> Result<serde_json::Value> {
@@ -95,17 +120,17 @@ impl GrpcClient {
     }
 
     async fn get_block_range(&mut self, start: u64, end: u64) -> Result<serde_json::Value> {
-        let start_block: BlockId = BlockId {
+        let start_block = BlockId {
             height: start,
             hash: Vec::new(),
         };
 
-        let end_block: BlockId = BlockId {
+        let end_block = BlockId {
             height: end,
             hash: Vec::new(),
         };
 
-        let range_request: BlockRange = BlockRange {
+        let range_request = BlockRange {
             start: Some(start_block),
             end: Some(end_block),
             pool_types: Vec::new(),
